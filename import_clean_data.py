@@ -38,7 +38,7 @@ def import_clean_airport_df(filename):
     # Delay sizes
 
     print('Creating delay size variables...')
-    for delay in ['CARRIER_DELAY', 'WEATHER_DELAY', 'LATE_AIRCRAFT_DELAY', 'SECURITY_DELAY']:
+    for delay in ['CARRIER_DELAY', 'WEATHER_DELAY', 'LATE_AIRCRAFT_DELAY', 'NAS_DELAY']:
         df.loc[(df[delay] == 1) & (df['DEP_DELAY_NEW'] >= 15), f'SIZE_{delay}'] = f'SMALL_{delay}'
         df.loc[(df[delay] == 1) & (df['DEP_DELAY_NEW'] > 30), f'SIZE_{delay}'] = f'MEDIUM_{delay}'
         df.loc[(df[delay] == 1) & (df['DEP_DELAY_NEW'] > 60), f'SIZE_{delay}'] = f'BIG_{delay}'
@@ -56,12 +56,13 @@ def import_clean_airport_df(filename):
     df = pd.get_dummies(df, columns=['SIZE_CARRIER_DELAY'])
     df = pd.get_dummies(df, columns=['SIZE_WEATHER_DELAY'])
     df = pd.get_dummies(df, columns=['SIZE_LATE_AIRCRAFT_DELAY'])
+    df = pd.get_dummies(df, columns=['SIZE_NAS_DELAY'])
 
     df = df.fillna(0)
 
     # Keep categorical delay sizes variables
     
-    for delay in ['CARRIER_DELAY', 'WEATHER_DELAY', 'LATE_AIRCRAFT_DELAY', 'SECURITY_DELAY']:
+    for delay in ['CARRIER_DELAY', 'WEATHER_DELAY', 'LATE_AIRCRAFT_DELAY', 'NAS_DELAY']:
         df.loc[(df[delay] == 1) & (df['DEP_DELAY_NEW'] >= 15), f'SIZE_{delay}'] = f'SMALL_{delay}'
         df.loc[(df[delay] == 1) & (df['DEP_DELAY_NEW'] > 30), f'SIZE_{delay}'] = f'MEDIUM_{delay}'
         df.loc[(df[delay] == 1) & (df['DEP_DELAY_NEW'] > 60), f'SIZE_{delay}'] = f'BIG_{delay}'
