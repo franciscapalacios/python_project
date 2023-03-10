@@ -8,17 +8,11 @@ def import_clean_airport_df(filename):
 
     # Delay Flags ranges
 
-    cd = df[df['CARRIER_DELAY']>0].CARRIER_DELAY
-    wd = df[df['WEATHER_DELAY']>0].WEATHER_DELAY
-    nd = df[df['NAS_DELAY']>0].NAS_DELAY
-    sd = df[df['SECURITY_DELAY']>0].SECURITY_DELAY
-    ld = df[df['LATE_AIRCRAFT_DELAY']>0].LATE_AIRCRAFT_DELAY
-
-    # print(f'Carrier Delay min:{cd.min()} max:{cd.max()}')
-    # print(f'Weather Delay min:{wd.min()} max:{wd.max()}')
-    # print(f'NAS Delay min:{nd.min()} max:{nd.max()}')
-    # print(f'Security Delay min:{sd.min()} max:{sd.max()}')
-    # print(f'Late Aircraft Delay min:{ld.min()} max:{ld.max()}')
+    # cd = df[df['CARRIER_DELAY']>0].CARRIER_DELAY
+    # wd = df[df['WEATHER_DELAY']>0].WEATHER_DELAY
+    # nd = df[df['NAS_DELAY']>0].NAS_DELAY
+    # sd = df[df['SECURITY_DELAY']>0].SECURITY_DELAY
+    # ld = df[df['LATE_AIRCRAFT_DELAY']>0].LATE_AIRCRAFT_DELAY
 
     # Binarize delay flags
 
@@ -57,6 +51,7 @@ def import_clean_airport_df(filename):
     df = pd.get_dummies(df, columns=['SIZE_WEATHER_DELAY'])
     df = pd.get_dummies(df, columns=['SIZE_LATE_AIRCRAFT_DELAY'])
     df = pd.get_dummies(df, columns=['SIZE_NAS_DELAY'])
+    df = pd.get_dummies(df, columns=['SIZE_DELAY'])
 
     df = df.fillna(0)
 
@@ -68,5 +63,10 @@ def import_clean_airport_df(filename):
         df.loc[(df[delay] == 1) & (df['DEP_DELAY_NEW'] > 60), f'SIZE_{delay}'] = f'BIG_{delay}'
 
         df.loc[(df[f'SIZE_{delay}'].isna()) & (df['DEP_DEL15']==0), f'SIZE_{delay}'] = 'NO_DELAY'
+
+    df.loc[df['DEP_DELAY_NEW'] < 15, f'SIZE_DELAY'] = f'NO_DELAY'
+    df.loc[df['DEP_DELAY_NEW'] >= 15, f'SIZE_DELAY'] = f'SMALL_DELAY'
+    df.loc[df['DEP_DELAY_NEW'] > 30, f'SIZE_DELAY'] = f'MEDIUM_DELAY'
+    df.loc[df['DEP_DELAY_NEW'] > 60, f'SIZE_DELAY'] = f'BIG_DELAY'
 
     return df
