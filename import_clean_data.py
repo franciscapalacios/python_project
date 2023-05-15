@@ -4,15 +4,6 @@ def import_clean_airport_df(filename):
 
     print('importing data...')
     df = pd.read_csv(filename)
-    #print(df.isnull().sum().reset_index().head(32))
-
-    # Delay Flags ranges
-
-    # cd = df[df['CARRIER_DELAY']>0].CARRIER_DELAY
-    # wd = df[df['WEATHER_DELAY']>0].WEATHER_DELAY
-    # nd = df[df['NAS_DELAY']>0].NAS_DELAY
-    # sd = df[df['SECURITY_DELAY']>0].SECURITY_DELAY
-    # ld = df[df['LATE_AIRCRAFT_DELAY']>0].LATE_AIRCRAFT_DELAY
 
     # Binarize delay flags
 
