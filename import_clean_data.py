@@ -2,7 +2,7 @@ import pandas as pd
 
 def import_clean_airport_df(filename):
 
-    print('importing data...')
+    print('Importing data...')
     df = pd.read_csv(filename)
 
     # Binarize delay flags
@@ -59,5 +59,19 @@ def import_clean_airport_df(filename):
     df.loc[df['DEP_DELAY_NEW'] >= 15, f'SIZE_DELAY'] = f'SMALL_DELAY'
     df.loc[df['DEP_DELAY_NEW'] > 30, f'SIZE_DELAY'] = f'MEDIUM_DELAY'
     df.loc[df['DEP_DELAY_NEW'] > 60, f'SIZE_DELAY'] = f'BIG_DELAY'
+
+    # Add other delays
+
+    print('Adding other delays...')
+    df['number_delays'] = df[['LATE_AIRCRAFT_DELAY', 'CARRIER_DELAY', 'WEATHER_DELAY', 'NAS_DELAY', 'SECURITY_DELAY']].sum(axis=1).fillna(0)
+    df.loc[(df['SIZE_DELAY']!='NO_DELAY') & (df['number_delays']==0), 'OTHER_CAUSES'] = 1
+    df.OTHER_CAUSES = df.OTHER_CAUSES.fillna(0)
+
+    df.loc[(df['OTHER_CAUSES'] == 1) & (df['DEP_DELAY_NEW'] >= 15), 'SIZE_OTHER_CAUSES'] = f'SMALL_OTHER_CAUSES'
+    df.loc[(df['OTHER_CAUSES'] == 1) & (df['DEP_DELAY_NEW'] > 30), 'SIZE_OTHER_CAUSES'] = f'MEDIUM_OTHER_CAUSES'
+    df.loc[(df['OTHER_CAUSES'] == 1) & (df['DEP_DELAY_NEW'] > 60), 'SIZE_OTHER_CAUSES'] = f'BIG_OTHER_CAUSES'
+    df.loc[(df[f'SIZE_OTHER_CAUSES'].isna()) & (df['DEP_DEL15']==0), 'SIZE_OTHER_CAUSES'] = 'NO_DELAY'
+
+    df['number_delays'] = df[['LATE_AIRCRAFT_DELAY', 'CARRIER_DELAY', 'WEATHER_DELAY', 'NAS_DELAY', 'SECURITY_DELAY', 'OTHER_CAUSES']].sum(axis=1).fillna(0)
 
     return df
